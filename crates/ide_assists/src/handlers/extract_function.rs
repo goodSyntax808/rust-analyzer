@@ -1076,14 +1076,20 @@ fn format_function(
     new_indent: IndentLevel,
 ) -> String {
     let mut fn_def = String::new();
-    let params = make_param_list(ctx, module, fun);
-    let ret_ty = make_ret_ty(ctx, module, fun);
-    let body = make_body(ctx, old_indent, new_indent, fun);
-    format_to!(fn_def, "\n\n{}fn $0{}{}", new_indent, fun.name, params);
-    if let Some(ret_ty) = ret_ty {
-        format_to!(fn_def, " {}", ret_ty);
-    }
-    format_to!(fn_def, " {}", body);
+
+    match ctx.config.snippet_cap {
+        None => (),
+        Some(_) => {
+            let params = make_param_list(ctx, module, fun);
+            let ret_ty = make_ret_ty(ctx, module, fun);
+            let body = make_body(ctx, old_indent, new_indent, fun);
+            format_to!(fn_def, "\n\n{}fn $0{}{}", new_indent, fun.name, params);
+            if let Some(ret_ty) = ret_ty {
+                format_to!(fn_def, " {}", ret_ty);
+            }
+            format_to!(fn_def, " {}", body);
+        }
+    };
 
     fn_def
 }
